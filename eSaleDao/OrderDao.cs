@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace eSaleDao
 {
-    class OrderDao
+    public class OrderDao
     {
-        eSaleModel.Order Order = new eSaleModel.Order();
+        /// <summary>
+        ///查詢訂單編號 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public eSaleModel.Order GetOrderID(int id) {
+
+            return new eSaleModel.Order() { CustomerID=id};
+        }
     }
 }

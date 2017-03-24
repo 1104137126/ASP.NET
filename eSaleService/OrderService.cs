@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace eSaleService
 {
-    class OrderService
+    public class OrderService
     {
-        public eSaleModel.Order
+        public eSaleModel.Order GetOrderID(int id) {
+            eSaleDao.OrderDao orderdao = new eSaleDao.OrderDao();
+            return orderdao.GetOrderID(id);
+        }
     }
 }
