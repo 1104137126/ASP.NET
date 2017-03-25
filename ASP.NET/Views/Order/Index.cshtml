@@ -1,0 +1,20 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    @using (Html.BeginForm("Result","Order")) {
+        <div> 
+            訂單編號查詢：<input type="text" name="orderid"> <input type="submit" value="確定">
+        </div>
+    }
+</body>
+</html>
