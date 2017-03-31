@@ -14,7 +14,6 @@ namespace eSaleDao
         /// <param name="id"></param>
         /// <returns></returns>
         public eSaleModel.Order GetOrderID(int id) {
-
             return new eSaleModel.Order() { CustomerID=id};
         }
     }

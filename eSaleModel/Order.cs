@@ -32,7 +32,7 @@ namespace eSaleModel
         /// <summary>
         /// 員工姓名
         /// </summary>
-        [DisplayName("員工編號")]
+        [DisplayName("員工姓名")]
         public string EmployeeName { get; set; }
         /// <summary>
         /// 訂單日期

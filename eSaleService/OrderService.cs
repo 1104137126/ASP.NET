@@ -7,7 +7,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
-
 namespace eSaleService
 {
     public class OrderService
@@ -34,13 +33,6 @@ namespace eSaleService
                          Inner Join Sales.Shippers As D On A.Shipperid = D.Shipperid Where A.Orderid = @Orderid";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring())) {
                 conn.Open();
-                if (conn.State == System.Data.ConnectionState.Open)
-                {
-                    Console.WriteLine("Success");
-                }
-                else {
-                    Console.WriteLine("Fasle");
-                }
                 SqlCommand cmd = new SqlCommand(SQL,conn);
                 cmd.Parameters.Add(new SqlParameter("@Orderid",id));
                 SqlDataAdapter ad = new SqlDataAdapter(cmd);
@@ -80,5 +72,61 @@ namespace eSaleService
             }
             return result;
         }
+        /// <summary>
+        /// 新增訂單
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public Boolean InsertOrder(eSaleModel.Order order) {
+            string SQL = @"Insert into Sales.Orders values(@CustomerID,
+                         @EmployeeID,@OrderDate,@RequiredDate,@ShippedDate,@ShipperID,
+                         @Freight,@ShipName,@ShipAddress,@ShipCity,@ShipRegion,@ShipPostalCode,
+                         @ShipCountry)
+                         Select SCOPE_IDENTITY()";
+            Boolean check = false;
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(SQL, conn);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", order.CustomerID));
+                cmd.Parameters.Add(new SqlParameter("@EmployeeID", order.EmployeeID));
+                cmd.Parameters.Add(new SqlParameter("@OrderDate", order.OrderDate));
+                cmd.Parameters.Add(new SqlParameter("@RequiredDate", order.RequiredDate));
+                cmd.Parameters.Add(new SqlParameter("@ShippedDate", order.ShippedDate));
+                cmd.Parameters.Add(new SqlParameter("@ShipperID", order.ShipperID));
+                cmd.Parameters.Add(new SqlParameter("@Freight", order.Freight));
+                cmd.Parameters.Add(new SqlParameter("@ShipName", order.ShipName));
+                cmd.Parameters.Add(new SqlParameter("@ShipAddress", order.ShipAddress));
+                cmd.Parameters.Add(new SqlParameter("@ShipCity", order.ShipCity));
+                cmd.Parameters.Add(new SqlParameter("@ShipRegion", order.ShipRegion));
+                cmd.Parameters.Add(new SqlParameter("@ShipPostalCode", order.ShipPostalCode));
+                cmd.Parameters.Add(new SqlParameter("@ShipCountry", order.ShipCountry));
+                if (cmd.ExecuteNonQuery().ToString().Equals("1"))
+                {
+                    check = true;
+                }
+                conn.Close();
+            }
+            return check;
+        }
+        /*public List<string> GetCustomerID() {
+            List < string > list= new List<string>();
+            string SQL = "Select CustomerID from Sales.Customers";
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(SQL, conn);
+                SqlDataReader rd = cmd.ExecuteReader();
+                rd.Read();
+                foreach (var item in rd)
+                {
+                    list.Add(item.ToString());
+                }
+                
+                conn.Close();
+            }
+            System.Diagnostics.Debug.WriteLine(list.ElementAt(0));
+            return list;
+        }*/
     }
 }
