@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-
+using System.Web.Mvc;
 namespace eSaleService
 {
     public class OrderService
@@ -109,24 +109,70 @@ namespace eSaleService
             }
             return check;
         }
-        /*public List<string> GetCustomerID() {
-            List < string > list= new List<string>();
-            string SQL = "Select CustomerID from Sales.Customers";
+        /// <summary>
+        /// 取得CustomerID
+        /// </summary>
+        /// <returns></returns>清單
+        public List<SelectListItem> GetCustomerID() {
+            List <SelectListItem> list= new List<SelectListItem>();
+            string SQL = "Select CustomerID from Sales.Customers order by CustomerID";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(SQL, conn);
                 SqlDataReader rd = cmd.ExecuteReader();
-                rd.Read();
-                foreach (var item in rd)
+                while(rd.Read())
                 {
-                    list.Add(item.ToString());
+                    list.Add(new SelectListItem{ Text = rd[0].ToString(),Value = rd[0].ToString()});
                 }
                 
                 conn.Close();
             }
-            System.Diagnostics.Debug.WriteLine(list.ElementAt(0));
             return list;
-        }*/
+        }
+        /// <summary>
+        /// 取得EmployeeID清單
+        /// </summary>
+        /// <returns></returns>
+        public List<SelectListItem> GetEmployeeID()
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            string SQL = "Select EmployeeID from HR.Employees order by EmployeeID";
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(SQL, conn);
+                SqlDataReader rd = cmd.ExecuteReader();
+                while (rd.Read())
+                {
+                    list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
+                }
+
+                conn.Close();
+            }
+            return list;
+        }
+        /// <summary>
+        /// 取得ShipperID清單
+        /// </summary>
+        /// <returns></returns>
+        public List<SelectListItem> GetShipperID()
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            string SQL = "Select ShipperID from Sales.Shippers order by ShipperID";
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(SQL, conn);
+                SqlDataReader rd = cmd.ExecuteReader();
+                while (rd.Read())
+                {
+                    list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
+                }
+
+                conn.Close();
+            }
+            return list;
+        }
     }
 }

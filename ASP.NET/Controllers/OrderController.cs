@@ -21,13 +21,18 @@ namespace ASP.NET.Controllers
             return View(result);
         }
         public ActionResult InsertOrder() {
-            /*eSaleService.OrderService orderservice = new eSaleService.OrderService();
-            @ViewBag.CustomerID= new SelectList(orderservice.GetCustomerID());*/
+            eSaleService.OrderService orderservice = new eSaleService.OrderService();
+            ViewBag.CustomerID = orderservice.GetCustomerID();
+            ViewBag.EmployeeID = orderservice.GetEmployeeID();
+            ViewBag.ShipperID = orderservice.GetShipperID();
             return View();
         }
         [HttpPost]
         public ActionResult InsertOrder(eSaleModel.Order order) {
             eSaleService.OrderService orderservice = new eSaleService.OrderService();
+            ViewBag.CustomerID = orderservice.GetCustomerID();
+            ViewBag.EmployeeID = orderservice.GetEmployeeID();
+            ViewBag.ShipperID = orderservice.GetShipperID();
             if (orderservice.InsertOrder(order))
             {
                 Response.Write("<script>alert('新增成功');</script>");
