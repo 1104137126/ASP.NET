@@ -17,6 +17,9 @@
         <hr />
         <dl class="dl-horizontal">
             <dt>
+                @Html.DisplayNameFor(model => model.OrderID)：@Html.DisplayFor(model => model.OrderID)
+            </dt>
+            <dt>
                 @Html.DisplayNameFor(model => model.CustomerID)：@Html.DisplayFor(model => model.CustomerID)
             </dt>
     
@@ -82,8 +85,13 @@
     
         </dl>
     </div>
-    <p>
-        @Html.ActionLink("返回", "Index")
-    </p>
+    @using (Html.BeginForm("DeleteOrder", "Order"))
+    {
+        <div>
+            @Html.Hidden("orderid", @Html.DisplayFor(model => model.OrderID), new { id = "orderid" }) <input type="submit" value="刪除訂單"> @Html.ActionLink("返回", "Index")
+        </div>
+    }
+        
+        
 </body>
 </html>

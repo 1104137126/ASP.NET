@@ -8,12 +8,12 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <title>訂單首頁</title>
 </head>
 <body>
     @using (Html.BeginForm("Result","Order")) {
         <div> 
-            訂單編號查詢：<input type="text" name="orderid"> <input type="submit" value="確定">
+            訂單編號查詢：@Html.TextBox("orderid") <input type="submit" value="查詢訂單">
         </div>
     }
         <div>

@@ -8,6 +8,7 @@ namespace ASP.NET.Controllers
 {
     public class OrderController : Controller
     {
+        eSaleService.OrderService orderservice = new eSaleService.OrderService();
         // GET: Order
         public ActionResult Index()
         {
@@ -16,12 +17,11 @@ namespace ASP.NET.Controllers
         [HttpPost]
         public ActionResult Result(int orderid)
         {
-            eSaleService.OrderService orderservice = new eSaleService.OrderService();
             var result=orderservice.GetOrderID(orderid);
+            @TempData["Order"] = result;
             return View(result);
         }
         public ActionResult InsertOrder() {
-            eSaleService.OrderService orderservice = new eSaleService.OrderService();
             ViewBag.CustomerID = orderservice.GetCustomerID();
             ViewBag.EmployeeID = orderservice.GetEmployeeID();
             ViewBag.ShipperID = orderservice.GetShipperID();
@@ -29,7 +29,6 @@ namespace ASP.NET.Controllers
         }
         [HttpPost]
         public ActionResult InsertOrder(eSaleModel.Order order) {
-            eSaleService.OrderService orderservice = new eSaleService.OrderService();
             ViewBag.CustomerID = orderservice.GetCustomerID();
             ViewBag.EmployeeID = orderservice.GetEmployeeID();
             ViewBag.ShipperID = orderservice.GetShipperID();
@@ -40,7 +39,19 @@ namespace ASP.NET.Controllers
             else {
                 Response.Write("<script>alert('新增失敗');</script>");
             }
-            return View();
+            return View("Index");
+        }
+        [HttpPost]
+        public ActionResult DeleteOrder(string orderid) {
+            if (orderservice.DeleteOrder(Convert.ToInt32(orderid)))
+            {
+                Response.Write("<script>alert('刪除成功');</script>");
+            }
+            else
+            {
+                Response.Write("<script>alert('刪除失敗');</script>");
+            }
+            return View("Index");
         }
     }
 }

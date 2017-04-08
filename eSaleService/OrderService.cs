@@ -42,74 +42,6 @@ namespace eSaleService
             return this.MapOrderDataToList(dt).FirstOrDefault();
         }
         /// <summary>
-        /// 找到條件訂單，放入DataTable
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <returns></returns>
-        private List<eSaleModel.Order> MapOrderDataToList(DataTable dt) {
-            List<eSaleModel.Order> result = new List<eSaleModel.Order>();
-            foreach (DataRow row in dt.Rows) {
-                result.Add(new eSaleModel.Order()
-                {
-                    OrderID = (int)row["OrderID"],
-                    CustomerID = (int)row["CustomerID"],
-                    CustomerName = row["CompanyName"].ToString(),
-                    EmployeeID = (int)row["EmployeeID"],
-                    EmployeeName = row["EmployeeName"].ToString(),
-                    Freight = (decimal)row["Freight"],
-                    OrderDate = row["OrderDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["OrderDate"],
-                    RequiredDate = row["RequiredDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["RequiredDate"],
-                    ShippedDate = row["Shippeddate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["Shippeddate"],
-                    ShipperID = (int)row["ShipperID"],
-                    ShipName = row["ShipName"].ToString(),
-                    ShipPostalCode = row["ShipPostalCode"].ToString(),
-                    ShipCity = row["ShipCity"].ToString(),
-                    ShipRegion = row["ShipRegion"].ToString(),
-                    ShipCountry = row["ShipCountry"].ToString(),
-                    ShipAddress = row["ShipAddress"].ToString(),
-                    ShipperName = row["ShipperName"].ToString()
-                });
-            }
-            return result;
-        }
-        /// <summary>
-        /// 新增訂單
-        /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
-        public Boolean InsertOrder(eSaleModel.Order order) {
-            string SQL = @"Insert into Sales.Orders values(@CustomerID,
-                         @EmployeeID,@OrderDate,@RequiredDate,@ShippedDate,@ShipperID,
-                         @Freight,@ShipName,@ShipAddress,@ShipCity,@ShipRegion,@ShipPostalCode,
-                         @ShipCountry)
-                         Select SCOPE_IDENTITY()";
-            Boolean check = false;
-            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
-            {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(SQL, conn);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", order.CustomerID));
-                cmd.Parameters.Add(new SqlParameter("@EmployeeID", order.EmployeeID));
-                cmd.Parameters.Add(new SqlParameter("@OrderDate", order.OrderDate));
-                cmd.Parameters.Add(new SqlParameter("@RequiredDate", order.RequiredDate));
-                cmd.Parameters.Add(new SqlParameter("@ShippedDate", order.ShippedDate));
-                cmd.Parameters.Add(new SqlParameter("@ShipperID", order.ShipperID));
-                cmd.Parameters.Add(new SqlParameter("@Freight", order.Freight));
-                cmd.Parameters.Add(new SqlParameter("@ShipName", order.ShipName));
-                cmd.Parameters.Add(new SqlParameter("@ShipAddress", order.ShipAddress));
-                cmd.Parameters.Add(new SqlParameter("@ShipCity", order.ShipCity));
-                cmd.Parameters.Add(new SqlParameter("@ShipRegion", order.ShipRegion));
-                cmd.Parameters.Add(new SqlParameter("@ShipPostalCode", order.ShipPostalCode));
-                cmd.Parameters.Add(new SqlParameter("@ShipCountry", order.ShipCountry));
-                if (cmd.ExecuteNonQuery().ToString().Equals("1"))
-                {
-                    check = true;
-                }
-                conn.Close();
-            }
-            return check;
-        }
-        /// <summary>
         /// 取得CustomerID
         /// </summary>
         /// <returns></returns>清單
@@ -173,6 +105,105 @@ namespace eSaleService
                 conn.Close();
             }
             return list;
+        }
+
+        /// <summary>
+        /// 找到條件訂單，放入DataTable
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        private List<eSaleModel.Order> MapOrderDataToList(DataTable dt) {
+            List<eSaleModel.Order> result = new List<eSaleModel.Order>();
+            foreach (DataRow row in dt.Rows) {
+                result.Add(new eSaleModel.Order()
+                {
+                    OrderID = (int)row["OrderID"],
+                    CustomerID = (int)row["CustomerID"],
+                    CustomerName = row["CompanyName"].ToString(),
+                    EmployeeID = (int)row["EmployeeID"],
+                    EmployeeName = row["EmployeeName"].ToString(),
+                    Freight = (decimal)row["Freight"],
+                    OrderDate = row["OrderDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["OrderDate"],
+                    RequiredDate = row["RequiredDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["RequiredDate"],
+                    ShippedDate = row["Shippeddate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["Shippeddate"],
+                    ShipperID = (int)row["ShipperID"],
+                    ShipName = row["ShipName"].ToString(),
+                    ShipPostalCode = row["ShipPostalCode"].ToString(),
+                    ShipCity = row["ShipCity"].ToString(),
+                    ShipRegion = row["ShipRegion"].ToString(),
+                    ShipCountry = row["ShipCountry"].ToString(),
+                    ShipAddress = row["ShipAddress"].ToString(),
+                    ShipperName = row["ShipperName"].ToString()
+                });
+            }
+            return result;
+        }
+        /// <summary>
+        /// 新增訂單
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public Boolean InsertOrder(eSaleModel.Order order) {
+            string SQL = @"Insert into Sales.Orders values(@CustomerID,
+                         @EmployeeID,@OrderDate,@RequiredDate,@ShippedDate,@ShipperID,
+                         @Freight,@ShipName,@ShipAddress,@ShipCity,@ShipRegion,@ShipPostalCode,
+                         @ShipCountry)
+                         Select SCOPE_IDENTITY()";
+            Boolean check = false;
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    cmd.Parameters.Add(new SqlParameter("@CustomerID", order.CustomerID));
+                    cmd.Parameters.Add(new SqlParameter("@EmployeeID", order.EmployeeID));
+                    cmd.Parameters.Add(new SqlParameter("@OrderDate", order.OrderDate));
+                    cmd.Parameters.Add(new SqlParameter("@RequiredDate", order.RequiredDate));
+                    cmd.Parameters.Add(new SqlParameter("@ShippedDate", order.ShippedDate));
+                    cmd.Parameters.Add(new SqlParameter("@ShipperID", order.ShipperID));
+                    cmd.Parameters.Add(new SqlParameter("@Freight", order.Freight));
+                    cmd.Parameters.Add(new SqlParameter("@ShipName", order.ShipName));
+                    cmd.Parameters.Add(new SqlParameter("@ShipAddress", order.ShipAddress));
+                    cmd.Parameters.Add(new SqlParameter("@ShipCity", order.ShipCity));
+                    cmd.Parameters.Add(new SqlParameter("@ShipRegion", order.ShipRegion));
+                    cmd.Parameters.Add(new SqlParameter("@ShipPostalCode", order.ShipPostalCode));
+                    cmd.Parameters.Add(new SqlParameter("@ShipCountry", order.ShipCountry));
+                    if (cmd.ExecuteNonQuery().ToString().Equals("1"))
+                    {
+                        check = true;
+                    }
+                    conn.Close();
+                }
+                catch(Exception e){
+                    Console.WriteLine(e);
+                }
+            }
+            return check;
+        }
+        [HttpPost]
+        public Boolean DeleteOrder(int orderid) {
+            string SQL = @"Delete from Sales.Orders where Orderid=@Orderid";
+            Boolean check = false;
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    cmd.Parameters.Add(new SqlParameter("@OrderID", orderid));
+                    if (cmd.ExecuteNonQuery().ToString().Equals("1"))
+                    {
+                        check = true;
+                    }
+                    conn.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+            return check;
         }
     }
 }
