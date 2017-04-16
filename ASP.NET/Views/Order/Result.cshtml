@@ -88,10 +88,16 @@
     @using (Html.BeginForm("DeleteOrder", "Order"))
     {
         <div>
-            @Html.Hidden("orderid", @Html.DisplayFor(model => model.OrderID), new { id = "orderid" }) <input type="submit" value="刪除訂單"> @Html.ActionLink("返回", "Index")
+            @Html.Hidden("orderid", @Html.DisplayFor(model => model.OrderID), new { id = "orderid" }) <input type="submit" value="刪除訂單">
         </div>
     }
-        
+    @using (Html.BeginForm("ModifyOrder", "Order"))
+    {
+        <div>
+            @Html.Hidden("orderid", @Html.DisplayFor(model => model.OrderID), new { id = "orderid" }) <input type="submit" value="修改訂單">
+        </div>
+    }
+     @Html.ActionLink("返回", "Index")
         
 </body>
 </html>

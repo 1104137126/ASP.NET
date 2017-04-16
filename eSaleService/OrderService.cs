@@ -32,12 +32,18 @@ namespace eSaleService
                          Inner Join Sales.Customers As B On A.Customerid = B.Customerid Inner Join Hr.Employees As C On A.Employeeid = C.Employeeid
                          Inner Join Sales.Shippers As D On A.Shipperid = D.Shipperid Where A.Orderid = @Orderid";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring())) {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(SQL,conn);
-                cmd.Parameters.Add(new SqlParameter("@Orderid",id));
-                SqlDataAdapter ad = new SqlDataAdapter(cmd);
-                ad.Fill(dt);
-                conn.Close();
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    cmd.Parameters.Add(new SqlParameter("@Orderid", id));
+                    SqlDataAdapter ad = new SqlDataAdapter(cmd);
+                    ad.Fill(dt);
+                    conn.Close();
+                }
+                catch (Exception e) {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
             }
             return this.MapOrderDataToList(dt).FirstOrDefault();
         }
@@ -50,15 +56,21 @@ namespace eSaleService
             string SQL = "Select CustomerID from Sales.Customers order by CustomerID";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(SQL, conn);
-                SqlDataReader rd = cmd.ExecuteReader();
-                while(rd.Read())
+                try
                 {
-                    list.Add(new SelectListItem{ Text = rd[0].ToString(),Value = rd[0].ToString()});
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    SqlDataReader rd = cmd.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
+                    }
+
+                    conn.Close();
                 }
-                
-                conn.Close();
+                catch (Exception e) {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
             }
             return list;
         }
@@ -72,15 +84,21 @@ namespace eSaleService
             string SQL = "Select EmployeeID from HR.Employees order by EmployeeID";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(SQL, conn);
-                SqlDataReader rd = cmd.ExecuteReader();
-                while (rd.Read())
+                try
                 {
-                    list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
-                }
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    SqlDataReader rd = cmd.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
+                    }
 
-                conn.Close();
+                    conn.Close();
+                }
+                catch (Exception e) {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
             }
             return list;
         }
@@ -94,15 +112,21 @@ namespace eSaleService
             string SQL = "Select ShipperID from Sales.Shippers order by ShipperID";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(SQL, conn);
-                SqlDataReader rd = cmd.ExecuteReader();
-                while (rd.Read())
+                try
                 {
-                    list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
-                }
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    SqlDataReader rd = cmd.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
+                    }
 
-                conn.Close();
+                    conn.Close();
+                }
+                catch (Exception e) {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
             }
             return list;
         }
@@ -176,12 +200,16 @@ namespace eSaleService
                     conn.Close();
                 }
                 catch(Exception e){
-                    Console.WriteLine(e);
+                    System.Diagnostics.Debug.WriteLine(e);
                 }
             }
             return check;
         }
-        [HttpPost]
+        /// <summary>
+        /// 刪除訂單
+        /// </summary>
+        /// <param name="orderid"></param>
+        /// <returns></returns>
         public Boolean DeleteOrder(int orderid) {
             string SQL = @"Delete from Sales.Orders where Orderid=@Orderid";
             Boolean check = false;
@@ -200,7 +228,51 @@ namespace eSaleService
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
+            }
+            return check;
+        }
+        /// <summary>
+        /// 修改訂單
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public Boolean ModifyOrder(eSaleModel.Order order) {
+            string SQL = @"Update Sales.orders set CustomerID=@CustomerID,EmployeeID=@EmployeeID,OrderDate=@OrderDate,RequiredDate=@RequiredDate,
+                           ShippedDate=@ShippedDate,ShipperID=@ShipperID,Freight=@Freight,ShipName=@ShipName,ShipAddress=@ShipAddress,ShipCity=@ShipCity,
+                           ShipRegion=@ShipRegion,ShipPostalCode=@ShipPostalCode,ShipCountry=@ShipCountry where orderid=@OrderID";
+            Boolean check = false;
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    cmd.Parameters.Add(new SqlParameter("@OrderID", order.OrderID));
+                    cmd.Parameters.Add(new SqlParameter("@CustomerID", order.CustomerID));
+                    cmd.Parameters.Add(new SqlParameter("@EmployeeID", order.EmployeeID));
+                    cmd.Parameters.Add(new SqlParameter("@OrderDate", order.OrderDate));
+                    cmd.Parameters.Add(new SqlParameter("@RequiredDate", order.RequiredDate));
+                    cmd.Parameters.Add(new SqlParameter("@ShippedDate", order.ShippedDate));
+                    cmd.Parameters.Add(new SqlParameter("@ShipperID", order.ShipperID));
+                    cmd.Parameters.Add(new SqlParameter("@Freight", order.Freight));
+                    cmd.Parameters.Add(new SqlParameter("@ShipName", order.ShipName));
+                    cmd.Parameters.Add(new SqlParameter("@ShipAddress", order.ShipAddress));
+                    cmd.Parameters.Add(new SqlParameter("@ShipCity", order.ShipCity));
+                    cmd.Parameters.Add(new SqlParameter("@ShipRegion", order.ShipRegion));
+                    cmd.Parameters.Add(new SqlParameter("@ShipPostalCode", order.ShipPostalCode));
+                    cmd.Parameters.Add(new SqlParameter("@ShipCountry", order.ShipCountry));
+                    
+                    if (cmd.ExecuteNonQuery().ToString().Equals("1"))
+                    {
+                        check = true;
+                    }
+                    conn.Close();
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
                 }
             }
             return check;

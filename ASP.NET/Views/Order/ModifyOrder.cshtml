@@ -9,34 +9,53 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>新增訂單</title>
+    <title>修改訂單</title>
 </head>
 <body>
-    @using (Html.BeginForm("InsertOrderResult","Order")) 
+    @using (Html.BeginForm("ModifyOrderResult","Order"))
     {
         @Html.AntiForgeryToken()
         
         <div class="form-horizontal">
-            <h4>新增訂單</h4>
+            <h4>修改訂單</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.OrderID)
+    
             <div class="form-group">
                 @Html.LabelFor(model => model.CustomerID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div>
-                    @Html.DropDownList("CustomerID", ViewBag.CustomerID as SelectList);
+                <div class="col-md-10">
+                    @Html.DropDownList("CustomerID", ViewBag.CustomerID as SelectList,new { @Selected=Model.CustomerID.ToString()});
                 </div>
             </div>
+    
+            <div class="form-group">
+                @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+    
             <div class="form-group">
                 @Html.LabelFor(model => model.EmployeeID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div>
-                    @Html.DropDownList("EmployeeID", ViewBag.EmployeeID as SelectList);
+                <div class="col-md-10">
+                    @Html.DropDownList("EmployeeID", ViewBag.EmployeeID as SelectList, new { @Selected = Model.EmployeeID.ToString() });
+                </div>
+            </div>
+    
+            <div class="form-group">
+                @Html.LabelFor(model => model.EmployeeName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.EmployeeName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.EmployeeName, "", new { @class = "text-danger" })
                 </div>
             </div>
     
             <div class="form-group">
                 @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control" ,@type="date"} })
+                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control", @type = "date",@Value= (Model.OrderDate.ToString().Split('/')[0]) +"-" + (((Model.OrderDate.ToString().Split('/')[1]).Length) == 1 ? "0" + (Model.OrderDate.ToString().Split('/')[1]) : (Model.OrderDate.ToString().Split('/')[1])) + "-" + (Model.OrderDate.ToString().Split('/')[2].Substring(0, 2)) } })
                     @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -44,7 +63,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.RequiredDate, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.RequiredDate, new { htmlAttributes = new { @class = "form-control", @type = "date" } })
+                    @Html.EditorFor(model => model.RequiredDate, new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = (Model.RequiredDate.ToString().Split('/')[0])+"-" + (((Model.RequiredDate.ToString().Split('/')[1]).Length) == 1 ? "0" + (Model.RequiredDate.ToString().Split('/')[1]) : (Model.RequiredDate.ToString().Split('/')[1])) + "-" + (Model.RequiredDate.ToString().Split('/')[2].Substring(0, 2)) } })
                     @Html.ValidationMessageFor(model => model.RequiredDate, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -52,15 +71,15 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.ShippedDate, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShippedDate, new { htmlAttributes = new { @class = "form-control", @type = "date" } })
+                    @Html.EditorFor(model => model.ShippedDate, new { htmlAttributes = new { @class = "form-control", @type = "date" ,@Value= (Model.ShippedDate.ToString().Split('/')[0]) +"-"+(((Model.ShippedDate.ToString().Split('/')[1]).Length)==1? "0"+(Model.ShippedDate.ToString().Split('/')[1]): (Model.ShippedDate.ToString().Split('/')[1])) + "-"+ (Model.ShippedDate.ToString().Split('/')[2].Substring(0,2)) } })
                     @Html.ValidationMessageFor(model => model.ShippedDate, "", new { @class = "text-danger" })
                 </div>
             </div>
     
             <div class="form-group">
                 @Html.LabelFor(model => model.ShipperID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div>
-                    @Html.DropDownList("ShipperID", ViewBag.ShipperID as SelectList);
+                <div class="col-md-10">
+                    @Html.DropDownList("ShipperID", ViewBag.ShipperID as SelectList, new { @Selected = Model.ShipperID.ToString() });
                 </div>
             </div>
     
@@ -122,7 +141,7 @@
     
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="新增" class="btn btn-default" />
+                    <input type="submit" value="修改" class="btn btn-default" />
                 </div>
             </div>
         </div>
