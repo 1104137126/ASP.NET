@@ -13,11 +13,21 @@
 <body>
     @using (Html.BeginForm("Result","Order")) {
         <div> 
-            訂單編號查詢：@Html.TextBox("orderid") <input type="submit" value="查詢訂單">
+            <table border="1" cellpadding="4" cellspacing="0">
+                <tr><td>訂單編號</td><td colspan="3">@Html.TextBox("OrderID")</td></tr>
+                <tr><td>客戶名稱</td><td colspan="3">@Html.TextBox("CustomerName")</td></tr>
+                <tr><td>負責員工</td><td colspan="3">@Html.DropDownList("EmployeeName",ViewBag.EmployeeID as SelectList,"")</td></tr>
+                <tr><td>出貨公司</td><td colspan="3">@Html.DropDownList("CompanyName", ViewBag.ShipCompanyName as SelectList, "")</td></tr>
+                <tr><td>訂購日期</td><td>@Html.TextBox("OrderDate", "", new { @Type = "date" })</td><td>出貨日期</td><td>@Html.TextBox("ShippedDate", "", new { @Type = "date" })</td></tr>
+                <tr><td>需要日期</td><td colspan="3">@Html.TextBox("RequiredDate", "", new { @Type = "date" })</td></tr>
+                <tr><td></td><td colspan="3"><input type="submit" value="查詢"> <input type="reset" value="清除"> <input type="button" value="新增訂單" onclick="window.location='@Url.Action("InsertOrder", "Order")'"></td></tr>
+
+            </table>
         </div>
     }
-        <div>
-             <button onclick="window.location='@Url.Action("InsertOrder", "Order")'">新增訂單</button>
-        </div>
+    <br>
+    <div id="result">
+        @TempData["Result"]
+    </div>
 </body>
 </html>

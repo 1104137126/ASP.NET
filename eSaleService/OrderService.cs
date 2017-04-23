@@ -24,19 +24,29 @@ namespace eSaleService
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public eSaleModel.Order GetOrderID(int id) {
+        public List<eSaleModel.Order> GetOrder(eSaleModel.Order order) {
             DataTable dt = new DataTable();
-            string SQL = @"Select A.Orderid,A.Customerid,B.Companyname,A.Employeeid,C.Lastname + C.Firstname As Employeename,
+            string SQL = @"Select A.Orderid,A.Customerid,B.Companyname,A.Employeeid,C.Lastname +' '+ C.Firstname As Employeename,
                            A.Orderdate,A.Requireddate,A.Shippeddate,A.Shipperid,D.Companyname AS Shippername,A.Freight,
-                         A.Shipname,A.Shipaddress,A.Shipcity,A.Shipregion,A.Shippostalcode,A.Shipcountry From Sales.Orders AS A
-                         Inner Join Sales.Customers As B On A.Customerid = B.Customerid Inner Join Hr.Employees As C On A.Employeeid = C.Employeeid
-                         Inner Join Sales.Shippers As D On A.Shipperid = D.Shipperid Where A.Orderid = @Orderid";
+                           A.Shipname,A.Shipaddress,A.Shipcity,A.Shipregion,A.Shippostalcode,A.Shipcountry 
+                           From Sales.Orders AS A Inner Join Sales.Customers As B On A.Customerid = B.Customerid 
+                           Inner Join Hr.Employees As C On A.Employeeid = C.Employeeid
+                           Inner Join Sales.Shippers As D On A.Shipperid = D.Shipperid 
+                           Where A.Orderid like @Orderid and B.CompanyName like @CustomerName and (C.FirstName+' '+C.FirstName) like @EmployeeName
+                                 and D.CompanyName like @CompanyName and A.OrderDate like @OrderDate and A.ShippedDate like @ShippedDate
+                                 and A.RequiredDate like @RequiredDate";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring())) {
                 try
                 {
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(SQL, conn);
-                    cmd.Parameters.Add(new SqlParameter("@Orderid", id));
+                    cmd.Parameters.Add(new SqlParameter("@OrderID",order.OrderID==0?"%%":"%"+Convert.ToString(order.OrderID)+"%"));
+                    cmd.Parameters.Add(new SqlParameter("@CustomerName", order.CustomerName==null?"%%":"%"+Convert.ToString(order.CustomerName)+"%"));
+                    cmd.Parameters.Add(new SqlParameter("@EmployeeName", order.EmployeeName == null ? "%%" :Convert.ToString(order.EmployeeName)));
+                    cmd.Parameters.Add(new SqlParameter("@CompanyName", order.CompanyName == null ? "%%" : Convert.ToString(order.CompanyName)));
+                    cmd.Parameters.Add(new SqlParameter("@OrderDate", order.OrderDate == null ? "%%" :Convert.ToString(order.OrderDate)));
+                    cmd.Parameters.Add(new SqlParameter("@ShippedDate", order.ShippedDate == null ? "%%" :Convert.ToString(order.ShippedDate)));
+                    cmd.Parameters.Add(new SqlParameter("@RequiredDate", order.RequiredDate == null ? "%%" :Convert.ToString(order.RequiredDate)));
                     SqlDataAdapter ad = new SqlDataAdapter(cmd);
                     ad.Fill(dt);
                     conn.Close();
@@ -45,7 +55,7 @@ namespace eSaleService
                     System.Diagnostics.Debug.WriteLine(e);
                 }
             }
-            return this.MapOrderDataToList(dt).FirstOrDefault();
+            return this.MapOrderDataToList(dt);
         }
         /// <summary>
         /// 取得CustomerID
@@ -75,13 +85,13 @@ namespace eSaleService
             return list;
         }
         /// <summary>
-        /// 取得EmployeeID清單
+        /// 取得EmployeeName清單
         /// </summary>
         /// <returns></returns>
-        public List<SelectListItem> GetEmployeeID()
+        public List<SelectListItem> GetEmployeeName()
         {
             List<SelectListItem> list = new List<SelectListItem>();
-            string SQL = "Select EmployeeID from HR.Employees order by EmployeeID";
+            string SQL = "Select LastName+' '+FirstName from HR.Employees order by LastName,FirstName";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
                 try
@@ -103,13 +113,13 @@ namespace eSaleService
             return list;
         }
         /// <summary>
-        /// 取得ShipperID清單
+        /// 取得ShipCompanyName清單
         /// </summary>
         /// <returns></returns>
-        public List<SelectListItem> GetShipperID()
+        public List<SelectListItem> GetShipCompanyName()
         {
             List<SelectListItem> list = new List<SelectListItem>();
-            string SQL = "Select ShipperID from Sales.Shippers order by ShipperID";
+            string SQL = "Select CompanyName from Sales.Shippers order by CompanyName";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
                 try
@@ -157,7 +167,8 @@ namespace eSaleService
                     ShipRegion = row["ShipRegion"].ToString(),
                     ShipCountry = row["ShipCountry"].ToString(),
                     ShipAddress = row["ShipAddress"].ToString(),
-                    ShipperName = row["ShipperName"].ToString()
+                    ShipperName = row["ShipperName"].ToString(),
+                    CompanyName = row["CompanyName"].ToString()
                 });
             }
             return result;

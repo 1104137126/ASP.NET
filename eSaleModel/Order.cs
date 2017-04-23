@@ -94,6 +94,11 @@ namespace eSaleModel
         /// </summary>
         [DisplayName("發貨人")]
         public string ShipperName { get; set; }
+        /// <summary>
+        /// 出貨公司
+        /// </summary>
+        [DisplayName("出貨公司")]
+        public string CompanyName { get; set; }
 
     }
 }

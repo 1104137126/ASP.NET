@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Helpers;
 
 namespace ASP.NET.Controllers
 {
@@ -12,19 +13,44 @@ namespace ASP.NET.Controllers
         // 首頁
         public ActionResult Index()
         {
+            ViewBag.EmployeeName = orderservice.GetEmployeeName();
+            ViewBag.CompanyName = orderservice.GetShipCompanyName();
+            @TempData["Result"]= "";
             return View();
         }
-        /// <summary>
-        /// 查詢訂單
-        /// </summary>
-        /// <param name="orderid"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult Result(int orderid)
-        {
-            var result=orderservice.GetOrderID(orderid);
-            @TempData["Order"] = result;
-            return View(result);
+        public ActionResult Result(eSaleModel.Order order) {
+            ViewBag.EmployeeName = orderservice.GetEmployeeName();
+            ViewBag.CompanyName = orderservice.GetShipCompanyName();
+            IEnumerable<eSaleModel.Order> result = orderservice.GetOrder(order);
+            var grid = new WebGrid(source:result,
+                                   rowsPerPage: 20,
+                                   ajaxUpdateContainerId: "result",
+                                   canPage:true,
+                                   canSort:true
+                                   );
+            @TempData["Result"] = grid.GetHtml(
+                               columns: new List<WebGridColumn> {
+                                    new WebGridColumn() { ColumnName = "OrderID", Header = "訂單編號" ,CanSort=true},
+                                    new WebGridColumn() { ColumnName = "CompanyName", Header = "客戶名稱",CanSort=true },
+                                    new WebGridColumn() { ColumnName = "OrderDate", Header = "訂購日期" ,CanSort=true,
+                                        Format = item =>string.Format("{0:yyyy/MM/dd}",item.OrderDate)
+                                    },
+                                    new WebGridColumn() { ColumnName = "RequiredDate", Header = "發貨日期",CanSort=true,
+                                        Format = item =>string.Format("{0:yyyy/MM/dd}",item.RequiredDate)
+                                    },
+                                    new WebGridColumn() {
+                                    ColumnName = "Edit",
+                                    Header = "編輯",
+                                    Format = item => "編輯"
+                                    },
+                                    new WebGridColumn() {
+                                    ColumnName = "Delete",
+                                    Header = "刪除",
+                                    Format = item=> "刪除"
+                                    }
+                                }, htmlAttributes: new { border="1" ,cellspacing="0",cellpadding="4"}
+                           );
+            return View("Index");
         }
         /// <summary>
         /// 新增訂單頁面
@@ -32,8 +58,8 @@ namespace ASP.NET.Controllers
         /// <returns></returns>
         public ActionResult InsertOrder() {
             ViewBag.CustomerID = orderservice.GetCustomerID();
-            ViewBag.EmployeeID = orderservice.GetEmployeeID();
-            ViewBag.ShipperID = orderservice.GetShipperID();
+            ViewBag.EmployeeName = orderservice.GetEmployeeName();
+            ViewBag.ShipperID = orderservice.GetShipCompanyName();
             return View();
         }
         /// <summary>
@@ -44,8 +70,8 @@ namespace ASP.NET.Controllers
         [HttpPost]
         public ActionResult InsertOrderResult(eSaleModel.Order order) {
             ViewBag.CustomerID = orderservice.GetCustomerID();
-            ViewBag.EmployeeID = orderservice.GetEmployeeID();
-            ViewBag.ShipperID = orderservice.GetShipperID();
+            ViewBag.EmployeeID = orderservice.GetEmployeeName();
+            ViewBag.ShipperID = orderservice.GetShipCompanyName();
             if (orderservice.InsertOrder(order))
             {
                 Response.Write("<script>alert('新增成功');</script>");
@@ -73,11 +99,11 @@ namespace ASP.NET.Controllers
             return View("Index");
         }
         [HttpPost]
-        public ActionResult ModifyOrder(int orderid) {
-            var result = orderservice.GetOrderID(orderid);
+        public ActionResult ModifyOrder(eSaleModel.Order order) {
+            var result = orderservice.GetOrder(order);
             ViewBag.CustomerID = orderservice.GetCustomerID();
-            ViewBag.EmployeeID = orderservice.GetEmployeeID();
-            ViewBag.ShipperID = orderservice.GetShipperID();
+            ViewBag.EmployeeID = orderservice.GetEmployeeName();
+            ViewBag.ShipperID = orderservice.GetShipCompanyName();
             return View(result);
         }
         public ActionResult ModifyOrderResult(eSaleModel.Order order) {
