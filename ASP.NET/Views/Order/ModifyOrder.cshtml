@@ -14,141 +14,20 @@
 <body>
     @using (Html.BeginForm("ModifyOrderResult","Order"))
     {
-        @Html.AntiForgeryToken()
-        
-        <div class="form-horizontal">
-            <h4>修改訂單</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.OrderID)
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.CustomerID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.DropDownList("CustomerID", ViewBag.CustomerID as SelectList,new { @Selected=Model.CustomerID.ToString()});
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.EmployeeID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.DropDownList("EmployeeID", ViewBag.EmployeeID as SelectList, new { @Selected = Model.EmployeeID.ToString() });
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.EmployeeName, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.EmployeeName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.EmployeeName, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control", @type = "date",@Value= (Model.OrderDate.ToString().Split('/')[0]) +"-" + (((Model.OrderDate.ToString().Split('/')[1]).Length) == 1 ? "0" + (Model.OrderDate.ToString().Split('/')[1]) : (Model.OrderDate.ToString().Split('/')[1])) + "-" + (Model.OrderDate.ToString().Split('/')[2].Substring(0, 2)) } })
-                    @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.RequiredDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.RequiredDate, new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = (Model.RequiredDate.ToString().Split('/')[0])+"-" + (((Model.RequiredDate.ToString().Split('/')[1]).Length) == 1 ? "0" + (Model.RequiredDate.ToString().Split('/')[1]) : (Model.RequiredDate.ToString().Split('/')[1])) + "-" + (Model.RequiredDate.ToString().Split('/')[2].Substring(0, 2)) } })
-                    @Html.ValidationMessageFor(model => model.RequiredDate, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShippedDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShippedDate, new { htmlAttributes = new { @class = "form-control", @type = "date" ,@Value= (Model.ShippedDate.ToString().Split('/')[0]) +"-"+(((Model.ShippedDate.ToString().Split('/')[1]).Length)==1? "0"+(Model.ShippedDate.ToString().Split('/')[1]): (Model.ShippedDate.ToString().Split('/')[1])) + "-"+ (Model.ShippedDate.ToString().Split('/')[2].Substring(0,2)) } })
-                    @Html.ValidationMessageFor(model => model.ShippedDate, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShipperID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.DropDownList("ShipperID", ViewBag.ShipperID as SelectList, new { @Selected = Model.ShipperID.ToString() });
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.Freight, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Freight, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Freight, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShipName, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShipName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.ShipName, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShipAddress, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShipAddress, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.ShipAddress, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShipCity, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShipCity, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.ShipCity, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShipRegion, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShipRegion, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.ShipRegion, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShipPostalCode, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShipPostalCode, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.ShipPostalCode, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.ShipCountry, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.ShipCountry, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.ShipCountry, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="修改" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
+       @Html.Label("修改訂單");
+        <table border="1" cellpadding="4" cellspacing="0">
+            <tr><td>訂單編號編號</td><td colspan="3">@Model.OrderID</td></tr>
+            <tr><td>*客戶名稱編號</td><td colspan="3">@Html.DropDownList("CustomerID", ViewBag.CustomerID as SelectList, new { @Selected = Model.CustomerID.ToString()})</td></tr>
+            <tr><td>*負責員工編號</td><td colspan="3">@Html.DropDownList("EmployeeID", ViewBag.EmployeeID as SelectList, new { @Selected = Model.EmployeeID.ToString()})</td></tr>
+            <tr><td>*訂單日期</td><td>@Html.TextBox("OrderDate","",new { @Type = "date" ,@Value= string.Format("{0:yyyy-MM-dd}", Model.OrderDate) })</td><td>需要日期</td><td>@Html.TextBox("RequiredDate", "", new { @Type = "date" ,@Value= string.Format("{0:yyyy-MM-dd}", Model.RequiredDate) })</td></tr>
+            <tr><td>出貨日期</td><td colspan="3">@Html.TextBox("ShippedDate", "", new { @Type = "date", @Value = string.Format("{0:yyyy-MM-dd}", Model.ShippedDate) })</td></tr>
+            <tr><td>船隻編號</td><td>@Html.DropDownList("ShipperID", ViewBag.ShipperID as SelectList, new { @Selected = Model.ShipperID.ToString() })</td><td>運費</td><td>@Html.TextBox("Freight")</td></tr>
+            <tr><td>出貨國家</td><td>@Html.TextBox("ShipCountry")</td><td>出貨城市</td><td>@Html.TextBox("ShipCity")</td></tr>
+            <tr><td>出貨地區</td><td>@Html.TextBox("ShipRegion")</td><td>郵遞區號</td><td>@Html.TextBox("ShipPostalCode")</td></tr>
+            <tr><td>出貨地址</td><td>@Html.TextBox("ShipAddress")</td><td>出貨說明</td><td></td></tr>
+            <tr><td>訂單金額總計</td><td td colspan="3">@Html.Label("")</td></tr>
+            <tr><td></td><td td colspan="3"><input type="submit" value="存檔"> @Ajax.ActionLink("刪除本筆訂單","DeleteOrder", new { OrderID = @Model.OrderID},new AjaxOptions { HttpMethod="GET"}) @Html.ActionLink("返回", "Index")</td></tr>
+        </table>
     }
-    
-    <div>
-        @Html.ActionLink("返回", "Index")
-    </div>
 </body>
 </html>

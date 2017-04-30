@@ -1,6 +1,12 @@
-﻿
+﻿@model eSaleModel.Order    
 @{
     Layout = null;
+
+    var grid = new WebGrid(source: (IEnumerable<eSaleModel.Order>)@TempData["result"],
+                    rowsPerPage: 20,
+                    ajaxUpdateContainerId: "result",
+                    canPage: true,
+                    canSort: true);
 }
 
 <!DOCTYPE html>
@@ -11,23 +17,46 @@
     <title>訂單首頁</title>
 </head>
 <body>
-    @using (Html.BeginForm("Result","Order")) {
-        <div> 
+    @using (Html.BeginForm("Result", "Order", FormMethod.Get))
+    {
+        <div>
             <table border="1" cellpadding="4" cellspacing="0">
                 <tr><td>訂單編號</td><td colspan="3">@Html.TextBox("OrderID")</td></tr>
                 <tr><td>客戶名稱</td><td colspan="3">@Html.TextBox("CustomerName")</td></tr>
-                <tr><td>負責員工</td><td colspan="3">@Html.DropDownList("EmployeeName",ViewBag.EmployeeID as SelectList,"")</td></tr>
+                <tr><td>負責員工</td><td colspan="3">@Html.DropDownList("EmployeeName", ViewBag.EmployeeName as SelectList, "")</td></tr>
                 <tr><td>出貨公司</td><td colspan="3">@Html.DropDownList("CompanyName", ViewBag.ShipCompanyName as SelectList, "")</td></tr>
-                <tr><td>訂購日期</td><td>@Html.TextBox("OrderDate", "", new { @Type = "date" })</td><td>出貨日期</td><td>@Html.TextBox("ShippedDate", "", new { @Type = "date" })</td></tr>
-                <tr><td>需要日期</td><td colspan="3">@Html.TextBox("RequiredDate", "", new { @Type = "date" })</td></tr>
-                <tr><td></td><td colspan="3"><input type="submit" value="查詢"> <input type="reset" value="清除"> <input type="button" value="新增訂單" onclick="window.location='@Url.Action("InsertOrder", "Order")'"></td></tr>
+                <tr><td>訂購日期</td><td>@Html.TextBox("OrderDate", "", new { @Type = "date" ,@Value=""})</td><td>出貨日期</td><td>@Html.TextBox("ShippedDate", "", new { @Type = "date", @Value = "" })</td></tr>
+                <tr><td>需要日期</td><td colspan="3">@Html.TextBox("RequiredDate", "", new { @Type = "date", @Value = "" })</td></tr>
+                <tr><td></td><td colspan="3"><input type="submit" value="查詢"> <input type="reset" value="清除"> <input type="button" value="新增訂單" onclick="window.location='@Url.Action("InsertOrder","Order")'"></td></tr>
 
             </table>
         </div>
     }
     <br>
     <div id="result">
-        @TempData["Result"]
+        @grid.GetHtml(
+                columns: new List<WebGridColumn>
+                    {
+                        new WebGridColumn() { ColumnName = "OrderID", Header = "訂單編號" ,CanSort=true},
+                        new WebGridColumn() { ColumnName = "CompanyName", Header = "客戶名稱",CanSort=true },
+                        new WebGridColumn() { ColumnName = "OrderDate", Header = "訂購日期" ,CanSort=true,
+                        Format = item =>string.Format("{0:yyyy/MM/dd}",item.OrderDate)
+                        },
+                        new WebGridColumn() { ColumnName = "RequiredDate", Header = "發貨日期",CanSort=true,
+                        Format = item =>string.Format("{0:yyyy/MM/dd}",item.RequiredDate)
+                        },
+                        new WebGridColumn() {
+                        ColumnName = "Edit",
+                        Header = "編輯",
+                        Format = item =>    Ajax.ActionLink("編輯","ModifyOrder", new { @OrderID = item.OrderID,@Type="button"},new AjaxOptions { HttpMethod="GET"})
+                        },
+                        new WebGridColumn() {
+                        ColumnName = "Delete",
+                        Header = "刪除",
+                        Format = item=>     Ajax.ActionLink("刪除","DeleteOrder", new { @OrderID = item.OrderID,@Type="button"},new AjaxOptions { HttpMethod="GET"})
+                        }
+                    }, htmlAttributes: new { border = "1", cellspacing = "0", cellpadding = "4" }
+            )
     </div>
 </body>
 </html>
