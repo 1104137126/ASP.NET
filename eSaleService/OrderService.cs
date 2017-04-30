@@ -422,12 +422,12 @@ namespace eSaleService
                     cmd.Parameters.Add(new SqlParameter("@OrderID", order.OrderID));
                     cmd.Parameters.Add(new SqlParameter("@CustomerID", order.CustomerID));
                     cmd.Parameters.Add(new SqlParameter("@EmployeeID", order.EmployeeID));
-                    cmd.Parameters.Add(new SqlParameter("@OrderDate", order.OrderDate));
-                    cmd.Parameters.Add(new SqlParameter("@RequiredDate", order.RequiredDate));
-                    cmd.Parameters.Add(new SqlParameter("@ShippedDate", order.ShippedDate));
+                    cmd.Parameters.Add(new SqlParameter("@OrderDate", string.Format("{0:yyyy/MM/dd}", order.OrderDate)));
+                    cmd.Parameters.Add(new SqlParameter("@RequiredDate", string.Format("{0:yyyy/MM/dd}", order.RequiredDate)));
+                    cmd.Parameters.Add(new SqlParameter("@ShippedDate", string.Format("{0:yyyy/MM/dd}", order.ShippedDate)));
                     cmd.Parameters.Add(new SqlParameter("@ShipperID", order.ShipperID));
                     cmd.Parameters.Add(new SqlParameter("@Freight", order.Freight));
-                    cmd.Parameters.Add(new SqlParameter("@ShipName", order.ShipName));
+                    cmd.Parameters.Add(new SqlParameter("@ShipName", order.ShipName==null?"":order.ShipName));
                     cmd.Parameters.Add(new SqlParameter("@ShipAddress", order.ShipAddress));
                     cmd.Parameters.Add(new SqlParameter("@ShipCity", order.ShipCity));
                     cmd.Parameters.Add(new SqlParameter("@ShipRegion", order.ShipRegion));

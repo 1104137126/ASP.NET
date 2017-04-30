@@ -16,7 +16,7 @@
     {
        @Html.Label("修改訂單");
         <table border="1" cellpadding="4" cellspacing="0">
-            <tr><td>訂單編號編號</td><td colspan="3">@Model.OrderID</td></tr>
+            <tr><td>訂單編號編號</td><td colspan="3">@Model.OrderID @Html.Hidden("OrderID",Model.OrderID.ToString())</td></tr>
             <tr><td>*客戶名稱編號</td><td colspan="3">@Html.DropDownList("CustomerID", ViewBag.CustomerID as SelectList, new { @Selected = Model.CustomerID.ToString()})</td></tr>
             <tr><td>*負責員工編號</td><td colspan="3">@Html.DropDownList("EmployeeID", ViewBag.EmployeeID as SelectList, new { @Selected = Model.EmployeeID.ToString()})</td></tr>
             <tr><td>*訂單日期</td><td>@Html.TextBox("OrderDate","",new { @Type = "date" ,@Value= string.Format("{0:yyyy-MM-dd}", Model.OrderDate) })</td><td>需要日期</td><td>@Html.TextBox("RequiredDate", "", new { @Type = "date" ,@Value= string.Format("{0:yyyy-MM-dd}", Model.RequiredDate) })</td></tr>

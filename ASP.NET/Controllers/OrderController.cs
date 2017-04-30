@@ -51,7 +51,7 @@ namespace ASP.NET.Controllers
             else {
                 Response.Write("<script>alert('新增失敗');</script>");
             }
-            return View("Index");
+            return Redirect("Index");
         }
         /// <summary>
         /// 刪除訂單
@@ -80,6 +80,9 @@ namespace ASP.NET.Controllers
             return View(result);
         }
         public ActionResult ModifyOrderResult(eSaleModel.Order order) {
+            ViewBag.EmployeeName = orderservice.GetEmployeeName();
+            ViewBag.CompanyName = orderservice.GetShipCompanyName();
+            @TempData["Result"] = new List<eSaleModel.Order>();
             if (orderservice.ModifyOrder(order))
             {
                 Response.Write("<script>alert('修改成功');</script>");
@@ -88,7 +91,7 @@ namespace ASP.NET.Controllers
             {
                 Response.Write("<script>alert('修改失敗');</script>");
             }
-            return View("Index");
+            return Redirect("Index");
         }
     }
 }
