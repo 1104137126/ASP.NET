@@ -10,6 +10,8 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>新增訂單</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
 </head>
 <body>
     
@@ -29,11 +31,28 @@
             <tr><td></td><td td colspan="3"><input type="submit" value="存檔"> <input type="button" value="回前一頁" onclick="window.location='@Url.Action("Index", "Order")'"></td></tr>
         </table>
 
-        @Html.Label("訂單明細");
-        <table border="1" cellpadding="4" cellspacing="0">
-            <tr><td>商品</td><td>單價</td><td>數量</td><td>小計</td><td></td></tr>
-        </table>
+        @Html.Label("訂單明細");<br>
 
+        <input type="button" value="新增商品" onclick="add_row()" >
+        <table id="table" border="1" cellpadding="4" cellspacing="0">
+            <tr><th>商品</th><th>單價</th><th>數量</th><th>小計</th><th></th></tr>
+        </table>
+        
     }
+    
 </body>
+@Html.DropDownList("ProductName", ViewBag.ProductName as SelectList)
+
+
+
 </html>
+ <script>
+    function add_row(){
+        var row = document.getElementById('table').insertRow(-1);
+        row.insertCell(0).innerHTML = "<select>" + document.getElementById('ProductName').innerHTML + "</select>";
+        row.insertCell(1).innerHTML=@Html.TextBox("UnitPrice[]");
+        row.insertCell(2).innerHTML =@Html.TextBox("Qty[]");
+        row.insertCell(3).innerHTML =@Html.Label("Count[]");
+        row.insertCell(4).innerHTML="<a onclick='Cancel()'>取消</a>";
+    }
+</script>

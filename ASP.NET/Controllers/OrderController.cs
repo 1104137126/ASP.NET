@@ -32,6 +32,7 @@ namespace ASP.NET.Controllers
             ViewBag.EmployeeID = orderservice.GetEmployeeID();
             ViewBag.ShipperID = orderservice.GetShipperID();
             ViewBag.CompanyName = orderservice.GetShipCompanyName();
+            ViewBag.ProductName = orderservice.GetProductName();
             return View();
         }
         /// <summary>
