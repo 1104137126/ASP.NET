@@ -74,7 +74,6 @@ namespace ASP.NET.Controllers
             ViewBag.EmployeeID = orderservice.GetEmployeeID();
             ViewBag.ShipperID = orderservice.GetShipperID();
             ViewBag.ProductName = orderservice.GetProductName();
-            ViewBag.OrderProduct = orderservice.GetModifyOrderProduct(order.OrderID);
             return View(result);
         }
         public ActionResult ModifyOrderResult(eSaleModel.Order order) {

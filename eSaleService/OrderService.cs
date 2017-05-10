@@ -515,31 +515,5 @@ namespace eSaleService
             }
             return check;
         }
-
-        public float[] GetModifyOrderProduct(int orderid)
-        {
-            float[,] list=new float[,] { };
-            string SQL = @"Select ProductID,UnitPrice,Qty,Discount from Production.Product where OrderID=@OrderID";
-            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
-            {
-                try
-                {
-                    conn.Open();
-                    SqlCommand cmd = new SqlCommand(SQL, conn);
-                    SqlDataReader rd = cmd.ExecuteReader();
-                    int i = 0;
-                    while (rd.Read())
-                    {
-                        list[i,0]= Convert.ToInt32(rd[0]),Convert.ToInt32(rd[1]),Convert.ToInt32(rd[2]),Convert.ToSingle(rd[3]);
-                    }
-                    conn.Close();
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.WriteLine(e);
-                }
-            }
-            return list;
-        }
     }
 }

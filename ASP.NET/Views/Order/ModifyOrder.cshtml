@@ -39,11 +39,6 @@
         </table>
     }
     @Html.DropDownList("ProductName", ViewBag.ProductName as SelectList, new { @Style = "width:0px" })
-
-    @foreach (var item in ViewBag.OrderProduct)
-    {
-        <p>@item[0]</p>
-    }
 </body>
 </html>
 <script>
