@@ -99,6 +99,27 @@ namespace eSaleModel
         /// </summary>
         [DisplayName("出貨公司")]
         public string CompanyName { get; set; }
+        /// <summary>
+        /// 產品名稱
+        /// </summary>
+        [DisplayName("產品名稱")]
+        public int[] ProductName { get; set; }
+        /// <summary>
+        /// 單價
+        /// </summary>
+        [DisplayName("單價")]
+        public int[] UnitPrice { get; set; }
+        /// <summary>
+        /// 數量
+        /// </summary>
+        [DisplayName("數量")]
+        public int[] Qty { get; set; }
+        /// <summary>
+        /// 折扣
+        /// </summary>
+        [DisplayName("折扣")]
+        public float[] Discount { get; set; }
+
 
     }
 }

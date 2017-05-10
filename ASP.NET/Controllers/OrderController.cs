@@ -45,13 +45,8 @@ namespace ASP.NET.Controllers
             ViewBag.EmployeeName = orderservice.GetEmployeeName();
             ViewBag.CompanyName = orderservice.GetShipCompanyName();
             @TempData["Result"] = new List<eSaleModel.Order>();
-            if (orderservice.InsertOrder(order))
-            {
-                Response.Write("<script>alert('新增成功');</script>");
-            }
-            else {
-                Response.Write("<script>alert('新增失敗');</script>");
-            }
+            int id=(orderservice.InsertOrder(order));
+            orderservice.InsertOrderDetails(id, order);
             return Redirect("Index");
         }
         /// <summary>
@@ -63,7 +58,7 @@ namespace ASP.NET.Controllers
             ViewBag.EmployeeName = orderservice.GetEmployeeName();
             ViewBag.CompanyName = orderservice.GetShipCompanyName();
             @TempData["Result"] = new List<eSaleModel.Order>();
-            if (orderservice.DeleteOrder(Convert.ToInt32(order.OrderID)))
+            if (orderservice.DeleteOrderDetails(Convert.ToInt32(order.OrderID)) &orderservice.DeleteOrder(Convert.ToInt32(order.OrderID)))
             {
                 Response.Write("<script>alert('刪除成功');</script>");
             }
@@ -78,6 +73,8 @@ namespace ASP.NET.Controllers
             ViewBag.CustomerID = orderservice.GetCustomerID();
             ViewBag.EmployeeID = orderservice.GetEmployeeID();
             ViewBag.ShipperID = orderservice.GetShipperID();
+            ViewBag.ProductName = orderservice.GetProductName();
+            ViewBag.OrderProduct = orderservice.GetModifyOrderProduct(order.OrderID);
             return View(result);
         }
         public ActionResult ModifyOrderResult(eSaleModel.Order order) {

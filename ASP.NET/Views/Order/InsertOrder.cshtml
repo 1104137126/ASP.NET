@@ -18,7 +18,7 @@
     @using (Html.BeginForm("InsertOrderResult", "Order"))
     {
         @Html.Label("新增訂單");
-        <table border="1" cellpadding="4" cellspacing="0">
+        <table border="1" cellpadding="4" cellspacing="0" id="new">
             <tr><td>*客戶名稱編號</td><td colspan="3">@Html.DropDownList("CustomerID", ViewBag.CustomerID as SelectList)</td></tr>
             <tr><td>*負責員工編號</td><td colspan="3">@Html.DropDownList("EmployeeID", ViewBag.EmployeeID as SelectList)</td></tr>
             <tr><td>*訂單日期</td><td>@Html.TextBox("OrderDate", "", new { @Type = "date" })</td><td>需要日期</td><td>@Html.TextBox("RequiredDate", "", new { @Type = "date" })</td></tr>
@@ -27,7 +27,7 @@
             <tr><td>出貨國家</td><td>@Html.TextBox("ShipCountry")</td><td>出貨城市</td><td>@Html.TextBox("ShipCity")</td></tr>
             <tr><td>出貨地區</td><td>@Html.TextBox("ShipRegion")</td><td>郵遞區號</td><td>@Html.TextBox("ShipPostalCode")</td></tr>
             <tr><td>出貨地址</td><td>@Html.TextBox("ShipAddress")</td><td>出貨說明</td><td></td></tr>
-            <tr><td>訂單金額總計</td><td td colspan="3">@Html.Label("")</td></tr>
+            <tr><td>訂單金額總計</td><td td colspan="3">0</td></tr>
             <tr><td></td><td td colspan="3"><input type="submit" value="存檔"> <input type="button" value="回前一頁" onclick="window.location='@Url.Action("Index", "Order")'"></td></tr>
         </table>
 
@@ -35,13 +35,13 @@
 
         <input type="button" value="新增商品" onclick="add_row()" >
         <table id="table" border="1" cellpadding="4" cellspacing="0">
-            <tr><th>商品</th><th>單價</th><th>數量</th><th>小計</th><th></th></tr>
+            <tr><th>商品</th><th>單價</th><th>數量</th><th>折扣</th><th>小計</th><th></th></tr>
         </table>
         
     }
-    
+    @Html.DropDownList("ProductName", ViewBag.ProductName as SelectList, new { @Style="width:0px" })
 </body>
-@Html.DropDownList("ProductName", ViewBag.ProductName as SelectList)
+
 
 
 
@@ -49,10 +49,30 @@
  <script>
     function add_row(){
         var row = document.getElementById('table').insertRow(-1);
-        row.insertCell(0).innerHTML = "<select>" + document.getElementById('ProductName').innerHTML + "</select>";
-        row.insertCell(1).innerHTML=@Html.TextBox("UnitPrice[]");
-        row.insertCell(2).innerHTML =@Html.TextBox("Qty[]");
-        row.insertCell(3).innerHTML =@Html.Label("Count[]");
-        row.insertCell(4).innerHTML="<a onclick='Cancel()'>取消</a>";
+        row.insertCell(0).innerHTML = "<select name='ProductName[]'>" + document.getElementById('ProductName').innerHTML + "</select>";
+        row.insertCell(1).innerHTML="<input name='UnitPrice[]' onChange='Count(this)' value='0' />";
+        row.insertCell(2).innerHTML = "<input name='Qty[]' onChange='Count(this)' value='0' />";
+        row.insertCell(3).innerHTML = "<input name='Discount[]' value='0' />";
+        row.insertCell(4).innerHTML = "0";
+        row.insertCell(5).innerHTML="<input type='button' onclick='Cancel(this)' value='取消' />";
+    }
+    function Cancel(row) {
+        var index = row.parentNode.parentNode.rowIndex;
+        document.getElementById('table').deleteRow(index);
+        var count = 0;
+        for (var i = 1; i < document.getElementById('table').rows.length; i++) {
+            count += parseInt(document.getElementById('table').rows[i].cells[4].innerHTML);
+        }
+        document.getElementById('new').rows[8].cells[1].innerHTML = count;
+    }
+    function Count(row) {
+        var index = row.parentNode.parentNode.rowIndex;
+        var r = document.getElementById('table').rows[index];
+        r.cells[4].innerHTML = parseInt(r.cells[1].firstChild.value) * parseInt(r.cells[2].firstChild.value) * (1 - parseInt(r.cells[3].firstChild.value));
+        var count = 0;
+        for (var i = 1; i < document.getElementById('table').rows.length; i++) {
+            count += parseInt(document.getElementById('table').rows[i].cells[4].innerHTML);
+        }
+        document.getElementById('new').rows[8].cells[1].innerHTML=count;
     }
 </script>

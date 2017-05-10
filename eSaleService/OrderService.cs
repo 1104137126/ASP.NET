@@ -51,7 +51,6 @@ namespace eSaleService
             }
             return result;
         }
-
         /// <summary>
         /// 取得訂單編號
         /// </summary>
@@ -60,7 +59,7 @@ namespace eSaleService
         public List<eSaleModel.Order> GetOrder(eSaleModel.Order order) {
             DataTable dt = new DataTable();
             string SQL = @"Select A.Orderid,A.Customerid,B.Companyname,A.Employeeid,C.Lastname +' '+ C.Firstname As Employeename,
-                           A.Orderdate,A.Requireddate,A.Shippeddate,A.Shipperid,D.Companyname AS Shippername,A.Freight,
+                           A.Orderdate,A.Requireddate,ISNULL(A.Shippeddate,null) Shippeddate,A.Shipperid,D.Companyname AS Shippername,A.Freight,
                            A.Shipname,A.Shipaddress,A.Shipcity,A.Shipregion,A.Shippostalcode,A.Shipcountry 
                            From Sales.Orders AS A Inner Join Sales.Customers As B On A.Customerid = B.Customerid 
                            Inner Join Hr.Employees As C On A.Employeeid = C.Employeeid
@@ -91,7 +90,7 @@ namespace eSaleService
             return this.MapOrderDataToList(dt);
         }
         /// <summary>
-        /// 取得訂單編號
+        /// 取得結果
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -309,7 +308,7 @@ namespace eSaleService
         public List<SelectListItem> GetProductName()
         {
             List<SelectListItem> list = new List<SelectListItem>();
-            string SQL = "Select ProductName from Production.Products order by ProductName";
+            string SQL = "Select ProductID,ProductName from Production.Products order by ProductName";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
                 try
@@ -319,7 +318,7 @@ namespace eSaleService
                     SqlDataReader rd = cmd.ExecuteReader();
                     while (rd.Read())
                     {
-                        list.Add(new SelectListItem { Text = rd[0].ToString(), Value = rd[0].ToString() });
+                        list.Add(new SelectListItem { Text = rd[1].ToString(), Value = rd[0].ToString() });
                     }
 
                     conn.Close();
@@ -337,13 +336,13 @@ namespace eSaleService
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        public Boolean InsertOrder(eSaleModel.Order order) {
+        public int InsertOrder(eSaleModel.Order order) {
             string SQL = @"Insert into Sales.Orders values(@CustomerID,
                          @EmployeeID,@OrderDate,@RequiredDate,@ShippedDate,@ShipperID,
                          @Freight,@ShipName,@ShipAddress,@ShipCity,@ShipRegion,@ShipPostalCode,
                          @ShipCountry)
-                         Select SCOPE_IDENTITY()";
-            Boolean check = false;
+                         Select Cast(SCOPE_IDENTITY() as int)";
+            int id=0;
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
             {
                 try
@@ -363,18 +362,55 @@ namespace eSaleService
                     cmd.Parameters.Add(new SqlParameter("@ShipRegion", order.ShipRegion));
                     cmd.Parameters.Add(new SqlParameter("@ShipPostalCode", order.ShipPostalCode));
                     cmd.Parameters.Add(new SqlParameter("@ShipCountry", order.ShipCountry));
-                    if (cmd.ExecuteNonQuery().ToString().Equals("1"))
-                    {
-                        check = true;
-                    }
+                    id = (int)cmd.ExecuteScalar();
                     conn.Close();
                 }
                 catch(Exception e){
                     System.Diagnostics.Debug.WriteLine(e);
                 }
             }
-            return check;
+            return id ;
         }
+
+        /// <summary>
+        /// 新增訂單明細
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="order"></param>
+        public void InsertOrderDetails(int id, eSaleModel.Order order)
+        {
+            for (int i = 0; i < order.ProductName.Length; i++)
+            {
+                string SQL = @"Insert into Sales.OrderDetails values(@ID,@ProductID,@UnitPrice,@Qty,@Discount)";
+
+                using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+                {
+                    try
+                    {
+                        conn.Open();
+                        SqlCommand cmd = new SqlCommand(SQL, conn);
+                        cmd.Parameters.Add(new SqlParameter("@ID", id));
+                        cmd.Parameters.Add(new SqlParameter("@ProductID", order.ProductName[i]));
+                        cmd.Parameters.Add(new SqlParameter("@UnitPrice", order.UnitPrice[i]));
+                        cmd.Parameters.Add(new SqlParameter("@Qty", order.Qty[i]));
+                        cmd.Parameters.Add(new SqlParameter("@Discount", order.Discount[i]));
+                        if (cmd.ExecuteNonQuery() == 1)
+                        {
+                            System.Diagnostics.Debug.WriteLine("SSSSSSSSSSS");
+                        }
+                        else {
+                            System.Diagnostics.Debug.WriteLine("FFFFFFFFFFF");
+                        }
+                        conn.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 刪除訂單
         /// </summary>
@@ -403,6 +439,38 @@ namespace eSaleService
             }
             return check;
         }
+
+        /// <summary>
+        /// 刪除訂單明細
+        /// </summary>
+        /// <param name="orderid"></param>
+        /// <returns></returns>
+        public Boolean DeleteOrderDetails(int orderid)
+        {
+            string SQL = @"Delete from Sales.OrderDetails where Orderid=@Orderid";
+            Boolean check = false;
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    cmd.Parameters.Add(new SqlParameter("@OrderID", orderid));
+                    if (cmd.ExecuteNonQuery().ToString().Equals("1"))
+                    {
+                        check = true;
+                    }
+                    conn.Close();
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
+            }
+            return check;
+        }
+
+
         /// <summary>
         /// 修改訂單
         /// </summary>
@@ -446,6 +514,32 @@ namespace eSaleService
                 }
             }
             return check;
+        }
+
+        public float[] GetModifyOrderProduct(int orderid)
+        {
+            float[,] list=new float[,] { };
+            string SQL = @"Select ProductID,UnitPrice,Qty,Discount from Production.Product where OrderID=@OrderID";
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    SqlDataReader rd = cmd.ExecuteReader();
+                    int i = 0;
+                    while (rd.Read())
+                    {
+                        list[i,0]= Convert.ToInt32(rd[0]),Convert.ToInt32(rd[1]),Convert.ToInt32(rd[2]),Convert.ToSingle(rd[3]);
+                    }
+                    conn.Close();
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
+            }
+            return list;
         }
     }
 }
