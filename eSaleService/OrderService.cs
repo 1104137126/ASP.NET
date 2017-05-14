@@ -379,33 +379,37 @@ namespace eSaleService
         /// <param name="order"></param>
         public void InsertOrderDetails(int id, eSaleModel.Order order)
         {
-            for (int i = 0; i < order.ProductName.Length; i++)
+            if (order.ProductName !=null)
             {
-                string SQL = @"Insert into Sales.OrderDetails values(@ID,@ProductID,@UnitPrice,@Qty,@Discount)";
-
-                using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+                for (int i = 0; i < order.ProductName.Length; i++)
                 {
-                    try
+                    string SQL = @"Insert into Sales.OrderDetails values(@ID,@ProductID,@UnitPrice,@Qty,@Discount)";
+
+                    using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
                     {
-                        conn.Open();
-                        SqlCommand cmd = new SqlCommand(SQL, conn);
-                        cmd.Parameters.Add(new SqlParameter("@ID", id));
-                        cmd.Parameters.Add(new SqlParameter("@ProductID", order.ProductName[i]));
-                        cmd.Parameters.Add(new SqlParameter("@UnitPrice", order.UnitPrice[i]));
-                        cmd.Parameters.Add(new SqlParameter("@Qty", order.Qty[i]));
-                        cmd.Parameters.Add(new SqlParameter("@Discount", order.Discount[i]));
-                        if (cmd.ExecuteNonQuery() == 1)
+                        try
                         {
-                            System.Diagnostics.Debug.WriteLine("SSSSSSSSSSS");
+                            conn.Open();
+                            SqlCommand cmd = new SqlCommand(SQL, conn);
+                            cmd.Parameters.Add(new SqlParameter("@ID", id));
+                            cmd.Parameters.Add(new SqlParameter("@ProductID", order.ProductName[i]));
+                            cmd.Parameters.Add(new SqlParameter("@UnitPrice", order.UnitPrice[i]));
+                            cmd.Parameters.Add(new SqlParameter("@Qty", order.Qty[i]));
+                            cmd.Parameters.Add(new SqlParameter("@Discount", order.Discount[i]));
+                            if (cmd.ExecuteNonQuery() == 1)
+                            {
+                                System.Diagnostics.Debug.WriteLine("SSSSSSSSSSS");
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine("FFFFFFFFFFF");
+                            }
+                            conn.Close();
                         }
-                        else {
-                            System.Diagnostics.Debug.WriteLine("FFFFFFFFFFF");
+                        catch (Exception e)
+                        {
+                            System.Diagnostics.Debug.WriteLine(e);
                         }
-                        conn.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        System.Diagnostics.Debug.WriteLine(e);
                     }
                 }
             }
@@ -514,6 +518,46 @@ namespace eSaleService
                 }
             }
             return check;
+        }
+
+        public List<eSaleModel.Order> ModifyOrderProduct(int orderid) {
+            DataTable dt = new DataTable();
+            string SQL = @"Select * from Sales.OrderDetails where orderID=@OrderID";
+            using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring()))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(SQL, conn);
+                    cmd.Parameters.Add(new SqlParameter("@OrderID", orderid));
+                    
+                    SqlDataAdapter ad = new SqlDataAdapter(cmd);
+                    ad.Fill(dt);
+                    conn.Close();
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
+            }
+            return this.MapModifyOrderDataToList(dt);
+        }
+
+        private List<eSaleModel.Order> MapModifyOrderDataToList(DataTable dt)
+        {
+            List<eSaleModel.Order> result = new List<eSaleModel.Order>();
+            int[] tmp = new int[1];
+            foreach (DataRow row in dt.Rows)
+            {
+                result.Add(new eSaleModel.Order() {
+                    ProductName = new int[] { Convert.ToInt32(row["ProductID"]) },
+                    UnitPrice = new int[] { Convert.ToInt32(row["UnitPrice"]) },
+                    Qty = new int[] { Convert.ToInt32(row["Qty"]) },
+                    Discount = new float[] { Convert.ToSingle(row["Discount"]) }
+
+                });
+            }
+            return result;
         }
     }
 }

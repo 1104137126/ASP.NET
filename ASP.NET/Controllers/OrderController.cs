@@ -74,13 +74,16 @@ namespace ASP.NET.Controllers
             ViewBag.EmployeeID = orderservice.GetEmployeeID();
             ViewBag.ShipperID = orderservice.GetShipperID();
             ViewBag.ProductName = orderservice.GetProductName();
+            ViewBag.ProductList = orderservice.ModifyOrderProduct(order.OrderID);
             return View(result);
         }
         public ActionResult ModifyOrderResult(eSaleModel.Order order) {
             ViewBag.EmployeeName = orderservice.GetEmployeeName();
             ViewBag.CompanyName = orderservice.GetShipCompanyName();
             @TempData["Result"] = new List<eSaleModel.Order>();
-            if (orderservice.ModifyOrder(order))
+            bool check= orderservice.DeleteOrderDetails(Convert.ToInt32(order.OrderID));
+            orderservice.InsertOrderDetails(order.OrderID, order);
+            if (orderservice.ModifyOrder(order) && check)
             {
                 Response.Write("<script>alert('修改成功');</script>");
             }
