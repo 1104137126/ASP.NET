@@ -16,11 +16,9 @@ namespace ASP.NET.Controllers
             @TempData["Result"]= new List<eSaleModel.Order>();
             return View();
         }
-        public ActionResult Result(eSaleModel.Order order) {
-            ViewBag.EmployeeName = orderservice.GetEmployeeName();
-            ViewBag.CompanyName = orderservice.GetShipCompanyName();
-            @TempData["Result"] = orderservice.GetOrder(order);
-            return View("Index");
+        public JsonResult Result(eSaleModel.Order order) {
+            var result = orderservice.GetOrder(order);
+            return Json(result,JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

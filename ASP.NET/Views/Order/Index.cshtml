@@ -1,25 +1,24 @@
-﻿@model eSaleModel.Order    
+﻿@model eSaleModel.Order
 @{
     Layout = null;
-
-    var grid = new WebGrid(source: (IEnumerable<eSaleModel.Order>)@TempData["result"],
-                    rowsPerPage: 20,
-                    ajaxUpdateContainerId: "result",
-                    canPage: true,
-                    canSort: true);
 }
 
 <!DOCTYPE html>
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
     <title>訂單首頁</title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.common.min.css">
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.rtl.min.css" />
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.silver.min.css" />
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.mobile.all.min.css" />
+    <script src="http://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <script src="http://kendo.cdn.telerik.com/2017.2.504/js/kendo.all.min.js"></script>
 </head>
 <body>
-    @using (Html.BeginForm("Result", "Order", FormMethod.Get))
-    {
-        <div>
+    <div>
+        <form id="form">
             <table border="1" cellpadding="4" cellspacing="0">
                 <tr><td>訂單編號</td><td colspan="3">@Html.TextBox("OrderID")</td></tr>
                 <tr><td>客戶名稱</td><td colspan="3">@Html.TextBox("CustomerName")</td></tr>
@@ -27,36 +26,90 @@
                 <tr><td>出貨公司</td><td colspan="3">@Html.DropDownList("CompanyName", ViewBag.ShipCompanyName as SelectList, "")</td></tr>
                 <tr><td>訂購日期</td><td>@Html.TextBox("OrderDate", "", new { @Type = "date" ,@Value=""})</td><td>出貨日期</td><td>@Html.TextBox("ShippedDate", "", new { @Type = "date", @Value = "" })</td></tr>
                 <tr><td>需要日期</td><td colspan="3">@Html.TextBox("RequiredDate", "", new { @Type = "date", @Value = "" })</td></tr>
-                <tr><td></td><td colspan="3"><input type="submit" value="查詢"> <input type="reset" value="清除"> <input type="button" value="新增訂單" onclick="window.location='@Url.Action("InsertOrder","Order")'"></td></tr>
+                <tr><td></td><td colspan="3"><input type="button" id="searchBtn" value="查詢"> <input type="reset" value="清除"> <input type="button" value="新增訂單" onclick="window.location='@Url.Action("InsertOrder","Order")'"></td></tr>
 
             </table>
-        </div>
-    }
-    <br>
-    <div id="result">
-        @grid.GetHtml(
-                columns: new List<WebGridColumn>
-                    {
-                        new WebGridColumn() { ColumnName = "OrderID", Header = "訂單編號" ,CanSort=true},
-                        new WebGridColumn() { ColumnName = "CompanyName", Header = "客戶名稱",CanSort=true },
-                        new WebGridColumn() { ColumnName = "OrderDate", Header = "訂購日期" ,CanSort=true,
-                        Format = item =>string.Format("{0:yyyy/MM/dd}",item.OrderDate)
-                        },
-                        new WebGridColumn() { ColumnName = "RequiredDate", Header = "發貨日期",CanSort=true,
-                        Format = item =>string.Format("{0:yyyy/MM/dd}",item.RequiredDate)
-                        },
-                        new WebGridColumn() {
-                        ColumnName = "Edit",
-                        Header = "編輯",
-                        Format = item =>    Ajax.ActionLink("編輯","ModifyOrder", new { @OrderID = item.OrderID,@Type="button"},new AjaxOptions { HttpMethod="GET"})
-                        },
-                        new WebGridColumn() {
-                        ColumnName = "Delete",
-                        Header = "刪除",
-                        Format = item=>     Ajax.ActionLink("刪除","DeleteOrder", new { @OrderID = item.OrderID,@Type="button"},new AjaxOptions { HttpMethod="GET"})
-                        }
-                    }, htmlAttributes: new { border = "1", cellspacing = "0", cellpadding = "4" }
-            )
+    </form>
     </div>
+    <br>
+    <div id="grid">
+    </div>
+    <script>
+        
+        $(document).ready(function () {
+            $("#searchBtn").click(function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Order/Result",
+                    data: $("#form").serialize(),
+                    dataType:"json",
+                    success: function (output) {
+                        var datasource = new kendo.data.DataSource({
+                            data: output,
+                            schema: {
+                                model: {
+                                    fields: {
+                                        OrderID: { type: "number" },
+                                        CompanyName: { type: "string" },
+                                        OrderDate: { type: "date" },
+                                        RequiredDate: { type: "date" }
+                                    }
+                                }
+                            },
+                            pageSize:20
+                        });
+                        $("#grid").kendoGrid({
+                            dataSource:datasource,
+                            height: 550,
+                            groupable: false,
+                            sortable: true,
+                            pageable:{
+                                refresh: true,
+                                pageSizes: true,
+                                buttonCount:5,
+                                messages:{
+                                    display: "第 {0}項 到 {1}項 總共 {2}項",
+                                    empty: "無資料",
+                                    itemsPerPage: "項／頁"
+                                }
+                            },
+                            columns: [{
+                                field: "OrderID",
+                                title:"訂單編號"
+                            }, {
+                                field: "CompanyName",
+                                title: "客戶名稱"
+                            }, {
+                                field: "OrderDate",
+                                title: "訂單日期",
+                                format: "{0:yyyy/MM/dd }"
+                            }, {
+                                field: "RequiredDate",
+                                title: "需要日期",
+                                format: "{0:yyyy/MM/dd }"
+                            }, {
+                                command: { text: "修改" },
+                                title: "修改",
+                                width:"150px"
+                            }, {
+                                command: { text: "刪除" },
+                                title: "刪除",
+                                width: "150px"
+                            }]
+                        });
+                    }
+                })
+            });
+            $("#EmployeeName").kendoDropDownList({
+                filter: "contains",
+                
+            });
+            $("#CompanyName").kendoDropDownList({
+                filter: "contains"
+            });
+            $("#form input").kendoMaskedTextBox();
+            $('tr').kendo
+        });
+    </script>
 </body>
 </html>

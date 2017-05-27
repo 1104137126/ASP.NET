@@ -64,7 +64,7 @@ namespace eSaleService
                            From Sales.Orders AS A Inner Join Sales.Customers As B On A.Customerid = B.Customerid 
                            Inner Join Hr.Employees As C On A.Employeeid = C.Employeeid
                            Inner Join Sales.Shippers As D On A.Shipperid = D.Shipperid 
-                           Where A.Orderid like @Orderid and B.CompanyName like @CustomerName and (C.FirstName+' '+C.FirstName) like @EmployeeName
+                           Where A.Orderid like @Orderid and B.CompanyName like @CustomerName and (C.LastName+' '+C.FirstName) like @EmployeeName
                                  and D.CompanyName like @CompanyName and convert(varchar(10),A.OrderDate,111) like @OrderDate and convert(varchar(10),A.ShippedDate,111) like @ShippedDate
                                  and convert(varchar(10),A.RequiredDate,111) like @RequiredDate";
             using (SqlConnection conn = new SqlConnection(this.GetDBconnectionstring())) {
