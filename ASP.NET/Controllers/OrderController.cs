@@ -52,19 +52,12 @@ namespace ASP.NET.Controllers
         /// </summary>
         /// <param name="orderid"></param>
         /// <returns></returns>
-        public ActionResult DeleteOrder(eSaleModel.Order order) {
+        public Boolean DeleteOrder(eSaleModel.Order order) {
             ViewBag.EmployeeName = orderservice.GetEmployeeName();
             ViewBag.CompanyName = orderservice.GetShipCompanyName();
             @TempData["Result"] = new List<eSaleModel.Order>();
-            if (orderservice.DeleteOrderDetails(Convert.ToInt32(order.OrderID)) &orderservice.DeleteOrder(Convert.ToInt32(order.OrderID)))
-            {
-                Response.Write("<script>alert('刪除成功');</script>");
-            }
-            else
-            {
-                Response.Write("<script>alert('刪除失敗');</script>");
-            }
-            return Redirect("Index");
+            
+            return (orderservice.DeleteOrderDetails(Convert.ToInt32(order.OrderID)) &orderservice.DeleteOrder(Convert.ToInt32(order.OrderID)));
         }
         public ActionResult ModifyOrder(eSaleModel.Order order) {
             var result = orderservice.GetOrderResult(order);

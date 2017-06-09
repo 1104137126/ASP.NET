@@ -35,7 +35,7 @@
     <div id="grid">
     </div>
     <script>
-        
+
         $(document).ready(function () {
             $("#searchBtn").click(function () {
                 $.ajax({
@@ -88,27 +88,58 @@
                                 title: "需要日期",
                                 format: "{0:yyyy/MM/dd }"
                             }, {
-                                command: { text: "修改" },
+                                command: {
+                                    name:"edit",
+                                    text: "修改",
+                                    click:function(e){
+                                        var tr = $(e.target).closest("tr");
+                                        var data = this.dataItem(tr);
+                                        location.href = "/Order/ModifyOrder?OrderID=" + data.OrderID;
+                                    }
+                                },
                                 title: "修改",
                                 width:"150px"
                             }, {
-                                command: { text: "刪除" },
+                                command: {
+                                    name:"destroy",
+                                    text: "刪除",
+                                },
                                 title: "刪除",
                                 width: "150px"
-                            }]
+                            }],
+                            editable: {
+                                confirmation: function (e) {
+                                    return "確定要刪除'"+e.OrderID+"'這筆訂單?";
+                                }
+                            },
+                            remove: function (e) {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '/Order/DeleteOrder',
+                                    data: {
+                                        'OrderID':e.model.OrderID
+                                    },
+                                    success: function (out) {
+                                        if (out) {
+                                            alert("刪除成功");
+
+                                        } else {
+                                            alert("刪除失敗");
+                                        }
+                                    },
+                                    error: function () {
+                                        alert("連線失敗");
+                                    }
+                                });
+                            }
                         });
                     }
                 })
             });
-            $("#EmployeeName").kendoDropDownList({
+            $("select").kendoDropDownList({
                 filter: "contains",
-                
-            });
-            $("#CompanyName").kendoDropDownList({
-                filter: "contains"
             });
             $("#form input").kendoMaskedTextBox();
-            $('tr').kendo
         });
     </script>
 </body>

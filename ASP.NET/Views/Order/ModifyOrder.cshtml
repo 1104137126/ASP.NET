@@ -10,7 +10,12 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>修改訂單</title>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.common.min.css">
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.rtl.min.css" />
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.silver.min.css" />
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.2.504/styles/kendo.mobile.all.min.css" />
+    <script src="http://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <script src="http://kendo.cdn.telerik.com/2017.2.504/js/kendo.all.min.js"></script>
     
 </head>
 <body>
@@ -88,11 +93,16 @@
     function Count(row) {
         var index = row.parentNode.parentNode.rowIndex;
         var r = document.getElementById('table').rows[index];
-        r.cells[4].innerHTML = parseInt(r.cells[1].firstChild.value) * parseInt(r.cells[2].firstChild.value) * (1 - parseInt(r.cells[3].firstChild.value));
+        r.cells[4].innerHTML = parseInt(r.cells[1].firstChild.value) * parseInt(r.cells[2].firstChild.value) * (1 - parseFloat(r.cells[3].firstChild.value));
         var count = 0;
-        for (var i = 1; i < document.getElementById('table').rows.length; i++) {
+        for (var i = 0; i < document.getElementById('table').rows.length; i++) {
             count += parseInt(document.getElementById('table').rows[i].cells[4].innerHTML);
         }
         document.getElementById('new').rows[9].cells[1].innerHTML=count;
     }
+    $("form select").kendoDropDownList({
+        filter: "contains",
+    });
+    $("#form input").kendoMaskedTextBox();
+
 </script>
